@@ -1,0 +1,31 @@
+struct threadInput
+{ 
+   void* shareMem;
+   int   threadID;
+   char* partialBuffer;
+   struct pair* (*fun_ptr)(struct pair*);
+};
+
+
+struct pair* reduce_sort(struct pair* pairArr){
+     int i = 0;
+        while(1){
+            if(pairArr[i].value == -1){break;}
+            strcpy(pairArr[i].key,"");
+            i++;
+             }
+        return pairArr;
+}
+
+void * reduce(void * threadArg){
+    struct threadInput * input  = (struct threadInput *)threadArg;
+    void * shmem = (*input).shareMem;
+    int threadID = (*input).threadID;
+    struct pair* pairArr = getCopyOfPairArr(shmem,threadID);
+  
+   //calling generic reduce
+   pairArr = (*input).fun_ptr(pairArr);
+
+   writeToSharedMem(shmem, pairArr, threadID);
+   return NULL;
+}
